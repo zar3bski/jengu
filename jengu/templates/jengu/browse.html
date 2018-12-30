@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+{% include "jengu/header.html" %}
+
+<!-- principales fonctionnalités: afficher les consultations i) par mois ii) par patients -->
+
+
+<div class="row">
+	<div class="six columns">
+		<h3>Rechercher par patient</h3>
+	</div>
+	
+
+	<div class="six columns">
+		
+		<form id="get_by_patient" method="get">
+              {% csrf_token %}
+              {{ form_patient }}
+              
+              <input type="submit" value="Entrer">
+         </form>
+	</div>
+</div>
+
+<div class="row">
+
+</div>
+
+
+{% else %}
+  <p>You are not logged in</p>
+  <a href="{% url 'login' %}">login</a>
+{% endif %}
+{% endblock %}

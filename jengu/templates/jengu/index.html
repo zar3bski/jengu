@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+{% include "jengu/header.html" %}
+
+  <div class="row">
+
+  		<div class="six columns">
+  			<h3>Enregistrer consultation</h3>
+            <form id="record_consultation" method="post" action="record/">
+              {% csrf_token %}
+              {{ form_record }}
+              
+              <input type="submit" value="Entrer">
+            </form>
+
+  		</div>
+
+      <div class="six columns">
+        <h3>Ajouter patient</h3>
+          
+          <form id="add_patient" method="post" action="add-patient/"> 
+            {% csrf_token %}
+            {{ form_add }}
+
+            <input type="submit" value="Entrer">
+
+          </form>
+      </div>
+  	
+  </div>
+
+
+{% else %}
+  <p>You are not logged in</p>
+  <a href="{% url 'login' %}">login</a>
+{% endif %}
+{% endblock %}

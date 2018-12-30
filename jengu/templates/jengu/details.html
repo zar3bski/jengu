@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+{% include "jengu/header.html" %}
+
+
+  
+<!-- trouver un moyen de ne faire basculer entre le mode vue et le mode édition-->
+
+  <div class="row">
+  		<div class="four columns">
+  			<h5><a href="mailto:{{ patient.mail }}">{{ patient.first_name }} {{ patient.last_name }}</a> {{ patient.birth_date }}</h5>
+
+        <form id="edit_patient" method="post" action="edit_patient/">
+              {% csrf_token %}
+              {{edit_patient}}
+              <input type="submit" value="Modifier">
+        </form>
+
+       
+  		</div>
+
+  		<div class="eight columns">
+  			<h4>Notes</h4>
+        <!-- mode vue-->
+        <!--<p>{{ patient.notes }}</p>-->
+
+        <form id="edit_notes" method="post" action="edit_note/">
+            {% csrf_token %}
+            {{edit_note}}
+            <br>
+            <input type="submit" value="Modifier">
+        </form>
+        
+      </div>
+  </div>
+
+  <div class="row">
+      <div class="twelve columns">
+          <h3>Historique consultation</h3>
+
+            <table class="u-full-width">
+                <tr>
+                      <th>Date</th>
+                      <th>Payé?</th>
+                </tr>
+
+                {% for c in consultations %}
+                  <tr>
+                      <th>{{c.date}}</th>
+                      <th>{{c.payed}}</th>
+                  </tr>
+                {% endfor %}
+                
+
+            </table>
+
+      </div>
+  </div>
+
+
+{% else %}
+  <p>You are not logged in</p>
+  <a href="{% url 'login' %}">login</a>
+{% endif %}
+{% endblock %}
+
+
