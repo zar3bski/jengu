@@ -2,6 +2,7 @@
 
 
 	<div class="header" align="right"> 
+		<img id="lock_status" src="{% static 'jengu/img/lock_open.png' %}" height="42">
 	  <a href="/jengu"><img src="{% static 'jengu/img/home.png' %}" height="42"></a>
 	  <a href="/jengu/compta/"><img src="{% static 'jengu/img/balance.png' %}" height="42"></a>
 	  <a href="/jengu/browse/"><img src="{% static 'jengu/img/fiches.png' %}" height="42"></a>
@@ -11,3 +12,9 @@
 	  Hello {{ user.username }}   
 	      <a href="{% url 'logout' %}">logout</a>
 	</div>
+
+	<script type="text/javascript">
+		if (sessionStorage.getItem("id_password") === null){
+			document.getElementById('lock_status').src = "/static/jengu/img/lock.png";
+		}
+	</script>
