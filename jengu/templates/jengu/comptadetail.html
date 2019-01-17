@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Jengu-impayés{% endblock %}
 
 {% block content %}
 {% if user.is_authenticated %}
@@ -10,7 +10,7 @@
 	<div class="row">
 		<h4>Impayés du mois</h4>
 
-        <table class="u-full-width">
+        <table class="u-full-width" id="tab_impaye">
         	<tr>
         		<th>ID</th>
                 <th>Date</th>
@@ -18,16 +18,25 @@
                 <th>Nom</th>  
             </tr>
             {% for c in unpayed %}
-            <tr>
+            
+            <tr bgcolor="{% cycle '#F5F5F5' '#AFAFAF' %}">
             	<td>{{c.id}}</td>
                 <td>{{c.date}}</td>
                 <td>{{c.first_name}}</td>
                 <td>{{c.last_name}}</td>
                       
             </tr>
-            {% endfor %}
-            
+            {% endfor %} 
         </table>
+
+        <!--added_for_client_side_encryption-->
+        <script type="text/javascript">
+            var table = document.getElementById("tab_impaye");
+            for (var i = 1, row; row = table.rows[i]; i++) {
+                row.cells[2].textContent = decrypt(row.cells[2].textContent);
+                row.cells[3].textContent = decrypt(row.cells[3].textContent);
+            }
+        </script>
 
 	</div>
 

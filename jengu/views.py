@@ -2,6 +2,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 
+from django.contrib.auth.models import User
+
 from .forms import AddPatientForm, RecordForm, SignUpForm, GetByPatients, EditPatient, EditNote, CalendarPickerForm, AdjustPayed
 #from django.contrib.auth.forms import UserCreationForm
 from .models import Patients, Consultations, Revenues, Unpayed
@@ -10,9 +12,11 @@ from django.urls import reverse_lazy
 
 from django.views import generic, View
 
-from django.views.generic import ListView
+#from django.views.generic import ListView
 
 from django.template import loader
+
+from django.db import connection
 
 from datetime import datetime
 
@@ -27,18 +31,18 @@ class SignUp(generic.CreateView):
     template_name = 'signup.html'
 
 def index(request):
-    try:
+    if request.user.is_authenticated:
         user = request.user
         form_record = RecordForm(user,initial={'payed':True})
         form_add = AddPatientForm()
 
         return render(request, 'jengu/index.html', {'form_add': form_add, 'form_record': form_record})
-    except:
+    else:
         return redirect('/')
 
 
 def add_patient(request):
-    try: 
+    if request.user.is_authenticated: 
         user = request.user
         if request.method == 'POST':
             form_add = AddPatientForm(request.POST)
@@ -66,11 +70,11 @@ def add_patient(request):
         
         return redirect('index')
 
-    except:
+    else:
         return redirect('/')
 
 def record_session(request):
-    try:
+    if request.user.is_authenticated:
         user = request.user
         if request.method == 'POST':
             form_record = RecordForm(user,request.POST,initial={'payed':True})
@@ -102,12 +106,11 @@ def record_session(request):
         else:
             return HttpResponse(':\ something went wrong')
             
-    except Exception as e:
-        print(e)
+    else:
         return redirect('/')
 
 def browse(request): 
-    try:
+    if request.user.is_authenticated:
         user = request.user
 
         if request.method == 'GET':
@@ -120,11 +123,11 @@ def browse(request):
                 return redirect(patient_id+'/')
 
         return render(request, 'jengu/browse.html',{'form_patient': form_patient})
-    except:
+    else:
         return redirect('/')
 
 def edit_note(request, patient_id):
-    try:
+    if request.user.is_authenticated:
         user = request.user
 
         if request.method == 'POST':
@@ -146,11 +149,11 @@ def edit_note(request, patient_id):
         
         return redirect('detail')
 
-    except:
+    else:
         return redirect('/')
 
 def edit_patient(request, patient_id):
-    try: 
+    if request.user.is_authenticated: 
         user = request.user
         if request.method == 'POST':
             form_patient = EditPatient(request.POST)
@@ -173,7 +176,7 @@ def edit_patient(request, patient_id):
         
         return redirect('detail')
 
-    except:
+    else:
         return redirect('/')
 
 # REFONTE PROGRESSIVE DE DETAIL. INTÉGRER LES REQUÊTES POST ASSOCIÉES À CETTE CLASSE EN VUE D'ÉVITER LES RÉPÉTITIONS
@@ -183,7 +186,7 @@ class Detail(View):
         self.template = loader.get_template('jengu/details.html')
 
     def get(self,request, patient_id):
-        try: 
+        if request.user.is_authenticated: 
             user = request.user
             patient = Patients.objects.get(id=patient_id)
 
@@ -202,20 +205,18 @@ class Detail(View):
             else: 
                 return HttpResponse("Vous ne pouvez pas accéder à cette fiche patient")
 
-        except:
+        else:
             return redirect('/')
 
     def post(self,request, patient_id):
         pass
 
-### NON, POUR LA COMPTA, ON S'ATTAQUE A AUX CLASS BASED VIEWS 
-# S'APPUYER SUR https://simpleisbetterthancomplex.com/article/2017/03/21/class-based-views-vs-function-based-views.html
 class Compta(View):
     form_class = CalendarPickerForm
     template = loader.get_template("jengu/compta.html")
 
     def get(self,request):
-        try: 
+        if request.user.is_authenticated: 
             user = request.user
             ca = Revenues.objects.get(owner_id=user.id)
             un = Unpayed.objects.get(owner_id=user.id)
@@ -230,7 +231,7 @@ class Compta(View):
 
             return HttpResponse(self.template.render(context, request))
 
-        except:
+        else:
             return redirect('/')
   
     def post(self,request):
@@ -246,7 +247,7 @@ class ComptaDetail(Compta):
     form_class = AdjustPayed
 
     def get(self,request, month):
-        try: 
+        if request.user.is_authenticated: 
             user = request.user
 
             adjust_form = self.form_class(initial=self.initial)
@@ -257,11 +258,11 @@ class ComptaDetail(Compta):
 
             return HttpResponse(self.template.render(context, request))
 
-        except:
+        else:
             return redirect('/')
 
     def post(self,request, month):
-        try: 
+        if request.user.is_authenticated: 
             user = request.user
             adjust_form = self.form_class(request.POST)
 
@@ -279,63 +280,55 @@ class ComptaDetail(Compta):
 
                 else: 
                     return HttpResponse(':\ something went wrong')
-        except:
+        else:
             return redirect('/')
-        
 
-    #return render(request, 'psy/compta.html')
-######OLD#SHIT###############
+class Profile(View):
+    template = loader.get_template("jengu/profile.html")
 
-    '''
-    if request.method == 'POST':
-        form_add = AddPatientForm(request.POST)
+    def get(self,request):
+        if request.user.is_authenticated:
+            user = request.user
+            user = User.objects.get(username=user)
 
-        #form_record = RecordForm(user,request.POST,initial={'payed':True})
-        
-        if form_add.is_valid():
-            form_add.clean()
-            birthday = datetime.strptime(form_add["birthday"].value(), '%d/%m/%Y')
+            context = {"user": user}
 
-            #adding patient if NOT EXIST IN DB (get_or_create)
-            d, created = Patients.objects.get_or_create(first_name= form_add["first_name"].value(), 
-                last_name= form_add["last_name"].value(),
-                birth_date= birthday, 
-                owner = user
-                )
-            
-            d.save()
+            return HttpResponse(self.template.render(context, request))
+        else:
+            return redirect('/')
 
-            return HttpResponse('/thanks/') 
+    def post(self,request):
+        if request.user.is_authenticated: 
+            user = request.user
+            with connection.cursor() as cursor:   
+                cursor.callproc("erase_user", [user.id])
+                
+            #logout(request)
+            return redirect('/')
+
+        else:
+            return redirect('/')
+
+# ON EN EST LÀ: LA SAUVEGARDE 
+class Save(View):
+    template = loader.get_template("jengu/save.html")
     
-    else:
-        form_record = RecordForm(user,initial={'payed':True})
-        form_add = AddPatientForm()
-    '''
+    def get(self,request):
+        if request.user.is_authenticated:
+            user = request.user
+            full_path = request.get_full_path()
 
+            if "?" in full_path:
+                if full_path.split("?=")[1] == "patients": 
+                    patient = Patients.objects.filter(owner_id=user.id)
+                    context={'table' : patient}
+                elif full_path.split("?=")[1] == "consultations":
+                    consultation = Consultations.objects.filter(owner_id=user.id)
+                    context={'table' : consultation}
+            else: 
+                context={}
 
-    '''
-    def detail(request, patient_id):
-    user = request.user
-    patient = Patients.objects.get(id=patient_id)
+            return HttpResponse(self.template.render(context, request))
 
-    edit_patient = EditPatient(initial={'tel':patient.tel, 'mail':patient.mail})
-    edit_note = EditNote(initial={'notes':patient.notes})
-
-    template = loader.get_template('psy/details.html')
-    context = {
-        'patient_name': '{} {}'.format(patient.first_name, patient.last_name),
-        'birth_date' : patient.birth_date,
-        'phone' : patient.tel,
-        'mail' : patient.mail,
-        "notes" : patient.notes,
-        "consultations" : Consultations.objects.filter(fk_patient_id=patient_id), #######
-        "edit_patient": edit_patient,
-        "edit_note": edit_note
-    }
-
-    if patient.owner == user: 
-        return HttpResponse(template.render(context, request))
-
-    else: 
-        return HttpResponse("Vous ne pouvez pas accéder à cette fiche patient")
-    '''
+        else: 
+            return redirect('/')

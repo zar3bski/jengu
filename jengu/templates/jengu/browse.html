@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Jengu-rechercher{% endblock %}
 
 {% block content %}
 {% if user.is_authenticated %}
@@ -23,7 +23,9 @@
               {{ form_patient }}
               
               <input type="submit" value="Entrer">
-         </form>
+        </form>
+        <!--added_for_client_side_encryption-->
+        <script type="text/javascript">decrypt_form("id_Patient");</script>
 	</div>
 </div>
 

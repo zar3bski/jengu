@@ -65,3 +65,17 @@ FOR EACH ROW
 EXECUTE PROCEDURE update_revenues();
 
 /* IMPORTANT : ADD A PROCEDURE TO ERASE THE CELL in the begining of the month (ROLLING YEARS) (with a cron job)*/
+
+/* Erase profile and all its data */
+CREATE OR REPLACE FUNCTION erase_user(i integer)
+RETURNS void 
+AS 
+$$
+BEGIN
+DELETE FROM jengu_consultations WHERE owner_id=$1;
+DELETE FROM jengu_patients WHERE owner_id = $1;
+DELETE FROM jengu_revenues WHERE owner_id = $1;
+DELETE FROM jengu_unpayed WHERE owner_id = $1;
+DELETE FROM auth_user WHERE id = $1;
+END;
+$$ LANGUAGE plpgsql;

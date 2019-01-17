@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Jengu-profil{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+{% include "jengu/header.html" %}
+
+
+<div class="row">
+	<div class="six columns">
+		<h4>{{user}}</h4>
+
+		<table class="u-full-width" align="right">
+			<tr>
+				<td>inscrit depuis:</td>
+				<td>{{user.date_joined}}</td>
+			</tr>
+
+			<tr>
+				<td>dernier login:</td>
+				<td>{{user.last_login}}</td>
+			</tr>
+
+			<tr>
+				<td>@:</td>
+				<td>{{user.email}}</td>
+			</tr>
+		</table>
+
+	</div>
+
+	<div class="six columns">
+
+	<h4>Effacer mon compte</h4>
+		<p>Cette action est définitive et irréversible. Nous ne gardons rien: votre profil, vos patients ainsi que les consultations enregistrées disparaissent de notre base de données.</p>
+
+		<form id="get_by_month" method="post">
+				{% csrf_token %}
+				<div align="right">
+					<input class="button-primary" type="submit" value="Effacer mon compte">
+				</div>
+				
+		</form>
+		 
+	</div>
+	
+</div>
+
+
+{% else %}
+  <p>You are not logged in</p>
+  <a href="{% url 'login' %}">login</a>
+{% endif %}
+{% endblock %}

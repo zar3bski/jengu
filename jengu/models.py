@@ -11,7 +11,8 @@ class Patients(models.Model):
     birth_date = models.DateField()
     inscription = models.DateTimeField(auto_now_add=True)
     tel = models.CharField(max_length=20, null=True)
-    mail = models.EmailField(max_length=80, null=True) # passer en charfield pour ne pas être emmerdé par la cryptographie
+    #mail = models.EmailField(max_length=80, null=True) # passer en charfield pour ne pas être emmerdé par la cryptographie
+    mail = models.CharField(max_length=80, null=True) # Modif pour données encodées côté client
     notes = models.TextField(null=True)
 
     def __str__(self):

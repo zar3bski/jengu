@@ -1,7 +1,6 @@
 from django import forms
 from .models import Patients
 
-
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
@@ -20,12 +19,13 @@ class AddPatientForm(forms.Form):
     	input_formats=['%d/%m/%Y',])
 
     tel = forms.CharField(label='tel', max_length=20, required=False)
-    mail = forms.EmailField(label='mail', max_length=80, required=False)  # passer en charfield pour ne pas être emmerdé par la cryptographie
+    #mail = forms.EmailField(label='mail', max_length=80, required=False)  # passer en charfield pour ne pas être emmerdé par la cryptographie
+    mail = forms.CharField(label='mail', max_length=80, required=False)  # Modif pour données encodées côté client
     notes = forms.CharField(label='notes',widget=forms.Textarea, required=False)
 
 class EditPatient(forms.Form):
     tel = forms.CharField(label='tel', max_length=20, required=False)
-    mail = forms.EmailField(label='mail', max_length=80, required=False)
+    mail = forms.CharField(label='mail', max_length=80, required=False)
 
 class EditNote(forms.Form):
     #notes = forms.CharField(label='notes', required=False)
