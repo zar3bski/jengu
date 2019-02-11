@@ -3,8 +3,8 @@
 # FROM directive instructing base image to build upon
 FROM python:3-onbuild
 
-# COPY setting.py from build server to overwrite the default one (edit according to you emplacement) 
-CMD ["cp /root/secrets/jengu/settings.py meds_pro/settings.py"]
+# ADD setting.py from build server to overwrite the default one (edit according to you emplacement) 
+ADD /root/secrets/jengu/settings.py meds_pro/settings.py 
 
 # COPY startup script into known file location in container
 COPY start.sh /start.sh
