@@ -9,6 +9,7 @@ COPY start.sh /start.sh
 # EXPOSE port 8000 to allow communication to/from server
 EXPOSE 8000
 
+
 # ADD custom functions and trigger to the DB
 ADD jengu/sql/jengu_base.sql /docker-entrypoint-initdb.d
 
