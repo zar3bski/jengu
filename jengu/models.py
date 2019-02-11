@@ -14,6 +14,7 @@ class Patients(models.Model):
     #mail = models.EmailField(max_length=80, null=True) # passer en charfield pour ne pas être emmerdé par la cryptographie
     mail = models.CharField(max_length=80, null=True) # Modif pour données encodées côté client
     notes = models.TextField(null=True)
+    active = models.BooleanField(default=True)
 
     def __str__(self):
     	return '{}, {}, {}'.format(self.last_name,self.first_name,self.birth_date)
@@ -21,10 +22,9 @@ class Patients(models.Model):
 class Consultations(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     fk_patient = models.ForeignKey(Patients, on_delete=models.CASCADE)
-
     first_name = models.CharField(max_length=40)
     last_name = models.CharField(max_length=40)
-    date = models.DateTimeField(auto_now_add=True)
+    date = models.DateTimeField()
     payed = models.FloatField(null=True) 
 
 '''ensure unicity of emails on the table user'''

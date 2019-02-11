@@ -131,5 +131,5 @@ EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")
 
 STATIC_URL = '/static/'
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/jengu'
 LOGOUT_REDIRECT_URL = '/'

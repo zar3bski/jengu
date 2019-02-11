@@ -12,16 +12,16 @@
 	<h3>Sauvegarder</h3>
 
 		<div class="six columns">
-			<h4><a href="{{ request.path}}?=patients">mes patients</a></h4>
+			<h4 align="center"><a href="{{ request.path}}?=patients">mes patients</a></h4>
 		</div>
 
 		<div class="six columns">
-			<h4><a href="{{ request.path}}?=consultations">mes consultations</a></h4>
+			<h4 align="center"><a href="{{ request.path}}?=consultations">mes consultations</a></h4>
 		</div>
 	</div>
 
 	<div class="row">
-		<div class="twelve columns">
+		<div class="twelve columns" style="border: none">
 
 			<table class="u-full-width" id="tab_save">
 				{% for c in table %}

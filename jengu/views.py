@@ -2,17 +2,18 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 
+from re import split as re_split
+
 from django.contrib.auth.models import User
 
 from .forms import AddPatientForm, RecordForm, SignUpForm, GetByPatients, EditPatient, EditNote, CalendarPickerForm, AdjustPayed
-#from django.contrib.auth.forms import UserCreationForm
+
 from .models import Patients, Consultations, Revenues, Unpayed
 
 from django.urls import reverse_lazy
 
 from django.views import generic, View
 
-#from django.views.generic import ListView
 
 from django.template import loader
 
@@ -77,25 +78,32 @@ def record_session(request):
     if request.user.is_authenticated:
         user = request.user
         if request.method == 'POST':
-            form_record = RecordForm(user,request.POST,initial={'payed':True})
+            form_record = RecordForm(user,request.POST)
 
             if form_record.is_valid():
                 form_record.clean()
 
-                #adding consultation in DB
+                # get data from form
                 id_patient = form_record["Patient"].value()
-                patient = Patients.objects.get(id=id_patient)
-
-                print('patient:', patient) 
-
-                if form_record["payed"].value()==True:
-                    payed = form_record["tarif"].value()
+                
+                date = form_record["date"].value()
+                if date == "":
+                    date = str(datetime.now())
                 else: 
+                    date = re_split(r'\W+', date)
+                    date = date[2]+"-"+date[1]+"-"+date[0]+" "+date[3]+":"+date[4]
+                
+                patient = Patients.objects.get(id=id_patient)
+                
+                payed = form_record["tarif"].value()
+                if payed == "":
                     payed = 0
                 
+                # happend to db
                 d = Consultations.objects.create(first_name=patient.first_name, 
                     last_name= patient.last_name,
                     fk_patient=patient,
+                    date=date,
                     payed= payed, 
                     owner = user
                     )
@@ -297,6 +305,7 @@ class Profile(View):
         else:
             return redirect('/')
 
+    # suppression of the user by calling a stored procedure
     def post(self,request):
         if request.user.is_authenticated: 
             user = request.user
@@ -309,7 +318,6 @@ class Profile(View):
         else:
             return redirect('/')
 
-# ON EN EST LÀ: LA SAUVEGARDE 
 class Save(View):
     template = loader.get_template("jengu/save.html")
     
@@ -323,7 +331,7 @@ class Save(View):
                     patient = Patients.objects.filter(owner_id=user.id)
                     context={'table' : patient}
                 elif full_path.split("?=")[1] == "consultations":
-                    consultation = Consultations.objects.filter(owner_id=user.id)
+                    consultation = Consultations.objects.filter(owner_id=user.id).order_by('date')
                     context={'table' : consultation}
             else: 
                 context={}

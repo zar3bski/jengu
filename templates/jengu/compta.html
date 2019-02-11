@@ -9,11 +9,11 @@
 
 <!-- content of the page -->
 	<div class="row">
-		<div class="six columns">
+		<div class="six columns" style="border: none">
 			<h4>Année {{year}}</h4>
 		</div>
 		
-		<div class="six columns">
+		<div class="six columns" style="border: none">
 			<form id="get_by_month" method="post">
 				{% csrf_token %}
 				{{ months }}

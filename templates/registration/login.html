@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+
+	<div class="container">	
+		{% block title %}Jengu-Login{% endblock %}
+
+			{% block content %}
+				<div class="six columns">
+					<h2>Login</h2>
+					<form method="post" >
+  						{% csrf_token %}
+  						{{ form.as_p }}
+  						<button onclick="storeKey()" type="submit" style=style="float: right;">Login</button> <!--added_for_client_side_encryption-->
+					</form>
+
+				<a href="{% url 'password_reset' %}">forgotten password</a>					
+				</div>
+
+
+			{% endblock %}
+	</div>
