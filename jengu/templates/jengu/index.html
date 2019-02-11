@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Jengu-accueil{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+{% include "jengu/header.html" %}
+
+  <div class="row">
+  		<div class="six columns">
+  			<h3>Enregistrer consultation</h3>
+            <form id="record_consultation" method="post" action="record/">
+              {% csrf_token %}
+              {{ form_record }}
+              
+              <input type="submit" value="Entrer">
+            </form>
+            <!--added_for_client_side_encryption-->
+            <script type="text/javascript">decrypt_form("id_Patient");</script>
+
+            <script>
+              $(function () {
+                $("#id_date").datetimepicker({
+                  format: 'd/m/Y H:i',
+                  //format: 'Y-M-D H:i',
+                });
+              });
+            </script>
+
+  		</div>
+
+      <div class="six columns">
+        <h3>Ajouter patient</h3>
+          
+          <!--added_for_client_side_encryption-->
+          <form id="add_patient" method="post" action="add-patient/" onsubmit="encrypt_form(['id_last_name','id_first_name', 'id_tel', 'id_mail', 'id_notes'])"> 
+            {% csrf_token %}
+            {{ form_add }}
+            
+            <input type="submit" value="Entrer">
+
+          </form>
+      </div>
+  	
+  </div>
+
+
+{% else %}
+  <p>You are not logged in</p>
+  <a href="{% url 'login' %}">login</a>
+{% endif %}
+{% endblock %}

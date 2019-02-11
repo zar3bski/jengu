@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block title %}Jengu-compta{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+{% include "jengu/header.html" %}
+
+<!-- content of the page -->
+	<div class="row">
+		<div class="six columns" style="border: none">
+			<h4>Année {{year}}</h4>
+		</div>
+		
+		<div class="six columns" style="border: none">
+			<form id="get_by_month" method="post">
+				{% csrf_token %}
+				{{ months }}
+				<input type="submit" value="Entrer">
+			</form>
+		</div>
+		
+	</div>
+
+
+	<div class="row">
+			<div class="six columns">
+				<table class="u-full-width">
+					<tr>
+						<th></th>
+						<th>Janvier</th>
+						<th>Février</th>
+						<th>Mars</th>
+					</tr>
+					<tr>
+						<th>CA (€) </th>
+						<td>{{ca.january}}</td>
+						<td>{{ca.february}}</td>
+						<td>{{ca.march}}</td>
+					</tr>
+					<tr>
+						<th>Impayés </th>
+						<td>{{un.january}}</td>
+						<td>{{un.february}}</td>
+						<td>{{un.march}}</td>
+					</tr>
+				</table>
+			</div>
+
+			<div class="six columns">
+				<table class="u-full-width">
+					<tr>
+						
+						<th>Avril</th>
+						<th>Mai</th>
+						<th>Juin</th>
+					</tr>
+					<tr>
+						<td>{{ca.april}}</td>
+						<td>{{ca.may}}</td>
+						<td>{{ca.june}}</td>
+					</tr>
+					<tr>
+						<td>{{un.april}}</td>
+						<td>{{un.may}}</td>
+						<td>{{un.june}}</td>
+					</tr>
+				</table>
+			</div>
+	</div>
+
+	<div class="row">
+			<div class="six columns">
+				<table class="u-full-width">
+					<tr>
+						<th></th>
+						<th>Juillet</th>
+						<th>Aout</th>
+						<th>Septembre</th>
+					</tr>
+					<tr>
+						<th>CA (€) </th>
+						<td>{{ca.july}}</td>
+						<td>{{ca.august}}</td>
+						<td>{{ca.september}}</td>
+					</tr>
+					<tr>
+						<th>impayés </th>
+						<td>{{un.july}}</td>
+						<td>{{un.august}}</td>
+						<td>{{un.september}}</td>
+					</tr>
+				</table>
+			</div>
+
+			<div class="six columns">
+				<table class="u-full-width">
+					<tr>
+						<th>Octobre</th>
+						<th>Novembre</th>
+						<th>Décembre</th>
+					</tr>
+					<tr>
+						<td>{{ca.october}}</td>
+						<td>{{ca.november}}</td>
+						<td>{{ca.december}}</td>
+					</tr>
+					<tr>
+						<td>{{un.october}}</td>
+						<td>{{un.november}}</td>
+						<td>{{un.december}}</td>
+					</tr>
+				</table>
+			</div>
+		
+	</div>
+
+{% else %}
+  <p>You are not logged in</p>
+  <a href="{% url 'login' %}">login</a>
+{% endif %}
+{% endblock %}

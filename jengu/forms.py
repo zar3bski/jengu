@@ -3,7 +3,7 @@ from .models import Patients
 
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from datetimepicker.widgets import DateTimePicker
+#from datetimepicker.widgets import DateTimePicker
 
 
 class AdjustPayed(forms.Form):
