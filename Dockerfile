@@ -1,17 +1,31 @@
-# Dockerfile
+# pull official base image
+FROM python:3.7-alpine
 
-# FROM directive instructing base image to build upon
-FROM python:3-onbuild
+# set environment varibles
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
-# COPY startup script into known file location in container
-COPY start.sh /start.sh
+# set work directory
+WORKDIR /usr/src/jengu
 
-# EXPOSE port 8000 to allow communication to/from server
-EXPOSE 8000
+# install psycopg2
+RUN apk update \
+    && apk add --virtual build-deps gcc python3-dev musl-dev \
+    && apk add postgresql-dev \
+    && pip install psycopg2 \
+    && apk del build-deps
 
-# ADD custom functions and trigger to the DB
-ADD jengu/sql/jengu_base.sql /docker-entrypoint-initdb.d
+# install dependencies
+RUN pip install --upgrade pip
+RUN pip install pipenv
+COPY ./Pipfile /usr/src/jengu/Pipfile
+RUN pipenv install --skip-lock --system --dev
 
-# CMD specifcies the command to execute to start the server running.
-CMD ["/start.sh"]
-# done!
+# copy entrypoint.sh
+COPY ./entrypoint.sh /usr/src/jengu/entrypoint.sh
+
+# copy project
+COPY . /usr/src/jengu/
+
+# run entrypoint.sh
+ENTRYPOINT ["/usr/src/jengu/entrypoint.sh"]

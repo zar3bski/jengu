@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '3zz*%#(7=j+p*t%ei-4pi!o@@x&=jrd=p0^17svm#pw!22-bnm'
+SECRET_KEY = os.getenv('SECRET_KEY', 'o@@xO=j22-#nm3zz*%y(7=j+p*t%ei-#pi!rd=p0^17svmYpw!')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -76,14 +76,17 @@ WSGI_APPLICATION = 'meds_pro.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'jengu_base',
-        'USER': 'jengu',
-        'PASSWORD': 'jengu_def4u1tP@ssw0rd',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'ENGINE': os.getenv('SQL_ENGINE', 'django.db.backends.postgresql'),
+        'NAME': os.getenv('SQL_DATABASE', 'jengu_base'),
+        'USER': os.getenv('SQL_USER', 'jengu'),
+        'PASSWORD': os.getenv('SQL_PASSWORD','jengu_def4u1tP@ssw0rd'),
+        'HOST': os.getenv('SQL_HOST', '127.0.0.1'),
+        'PORT': os.getenv('SQL_PORT', '5432'),
     }
 }
+
+
+
 
 
 # Password validation

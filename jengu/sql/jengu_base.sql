@@ -17,7 +17,6 @@ ON auth_user
 FOR EACH ROW 
 EXECUTE PROCEDURE insert_users_in_revenues();
 
-
 /* updates the monthly revenues / unpayed tables of the user every time 
 	- he records a consultation
 	- he updates the payement of a consultation */
