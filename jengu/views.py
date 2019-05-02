@@ -14,6 +14,7 @@ from django.urls import reverse_lazy
 
 from django.views import generic, View
 
+from django.contrib.auth.decorators import login_required
 
 from django.template import loader
 
@@ -31,108 +32,97 @@ class SignUp(generic.CreateView):
     success_url = reverse_lazy('login')
     template_name = 'signup.html'
 
+@login_required
 def index(request):
-    if request.user.is_authenticated:
-        user = request.user
-        form_record = RecordForm(user,initial={'payed':True})
-        form_add = AddPatientForm()
+    user = request.user
+    form_record = RecordForm(user,initial={'payed':True})
+    form_add = AddPatientForm()
 
-        return render(request, 'jengu/index.html', {'form_add': form_add, 'form_record': form_record})
-    else:
-        return redirect('/')
+    return render(request, 'jengu/index.html', {'form_add': form_add, 'form_record': form_record})
 
 
+@login_required
 def add_patient(request):
-    if request.user.is_authenticated: 
-        user = request.user
-        if request.method == 'POST':
-            form_add = AddPatientForm(request.POST)
+    user = request.user
+    if request.method == 'POST':
+        form_add = AddPatientForm(request.POST)
             
-            if form_add.is_valid():
-                form_add.clean()
-                birthday = datetime.strptime(form_add["birthday"].value(), '%d/%m/%Y')
+        if form_add.is_valid():
+            form_add.clean()
+            birthday = datetime.strptime(form_add["birthday"].value(), '%d/%m/%Y')
 
-                #adding patient if NOT EXIST IN DB (get_or_create)
-                d, created = Patients.objects.get_or_create(first_name= form_add["first_name"].value(), 
-                    last_name= form_add["last_name"].value(),
-                    birth_date= birthday, 
-                    owner = user,
-                    tel = form_add["tel"].value(),
-                    mail = form_add["mail"].value(),
-                    notes = form_add["notes"].value()
-                    )
+            #adding patient if NOT EXIST IN DB (get_or_create)
+            d, created = Patients.objects.get_or_create(first_name= form_add["first_name"].value(), 
+                last_name= form_add["last_name"].value(),
+                birth_date= birthday, 
+                owner = user,
+                tel = form_add["tel"].value(),
+                mail = form_add["mail"].value(),
+                notes = form_add["notes"].value()
+                )
                 
-                d.save()
+            d.save()
 
-                return redirect(request.META['HTTP_REFERER'])  
+            return redirect(request.META['HTTP_REFERER'])  
 
-        else: 
-            return HttpResponse(':\ something went wrong')
+    else: 
+        return HttpResponse(':\ something went wrong')
         
-        return redirect('index')
-
-    else:
-        return redirect('/')
-
+@login_required
 def record_session(request):
-    if request.user.is_authenticated:
-        user = request.user
-        if request.method == 'POST':
-            form_record = RecordForm(user,request.POST)
+    user = request.user
+    if request.method == 'POST':
+        form_record = RecordForm(user,request.POST)
 
-            if form_record.is_valid():
-                form_record.clean()
+        if form_record.is_valid():
+            form_record.clean()
 
-                # get data from form
-                id_patient = form_record["Patient"].value()
+            # get data from form
+            id_patient = form_record["Patient"].value()
                 
-                date = form_record["date"].value()
-                if date == "":
-                    date = str(datetime.now())
-                else: 
-                    date = re_split(r'\W+', date)
-                    date = date[2]+"-"+date[1]+"-"+date[0]+" "+date[3]+":"+date[4]
+            date = form_record["date"].value()
+            if date == "":
+                date = str(datetime.now())
+            else: 
+                date = re_split(r'\W+', date)
+                date = date[2]+"-"+date[1]+"-"+date[0]+" "+date[3]+":"+date[4]
                 
-                patient = Patients.objects.get(id=id_patient)
+            patient = Patients.objects.get(id=id_patient)
                 
-                payed = form_record["tarif"].value()
-                if payed == "":
-                    payed = 0
+            payed = form_record["tarif"].value()
+            if payed == "":
+                payed = 0
                 
-                # happend to db
-                d = Consultations.objects.create(first_name=patient.first_name, 
-                    last_name= patient.last_name,
-                    fk_patient=patient,
-                    date=date,
-                    payed= payed, 
-                    owner = user
-                    )
+            # happend to db
+            d = Consultations.objects.create(first_name=patient.first_name, 
+                last_name= patient.last_name,
+                fk_patient=patient,
+                date=date,
+                payed= payed, 
+                owner = user
+                )
                 
-                d.save()
+            d.save()
                 
-                return HttpResponse('/thanks/')
-        else:
-            return HttpResponse(':\ something went wrong')
+            return HttpResponse('/thanks/')
+    else:
+        return HttpResponse(':\ something went wrong')
             
-    else:
-        return redirect('/')
 
+@login_required
 def browse(request): 
-    if request.user.is_authenticated:
-        user = request.user
+    user = request.user
 
-        if request.method == 'GET':
-            form_patient = GetByPatients(user,request.GET)
+    if request.method == 'GET':
+        form_patient = GetByPatients(user,request.GET)
 
-            if form_patient.is_valid():
-                patient_id = form_patient["Patient"].value()
-                print("patient_id: ",patient_id)
+        if form_patient.is_valid():
+            patient_id = form_patient["Patient"].value()
+            print("patient_id: ",patient_id)
 
-                return redirect(patient_id+'/')
+            return redirect(patient_id+'/')
 
-        return render(request, 'jengu/browse.html',{'form_patient': form_patient})
-    else:
-        return redirect('/')
+    return render(request, 'jengu/browse.html',{'form_patient': form_patient})
 
 def edit_note(request, patient_id):
     if request.user.is_authenticated:
@@ -160,33 +150,31 @@ def edit_note(request, patient_id):
     else:
         return redirect('/')
 
-def edit_patient(request, patient_id):
-    if request.user.is_authenticated: 
-        user = request.user
-        if request.method == 'POST':
-            form_patient = EditPatient(request.POST)
+@login_required
+def edit_patient(request, patient_id):  
+    user = request.user
+    if request.method == 'POST':
+        form_patient = EditPatient(request.POST)
             
-            if form_patient.is_valid():
-                form_patient.clean()
+        if form_patient.is_valid():
+            form_patient.clean()
 
-                patient = Patients.objects.get(id=patient_id)
+            patient = Patients.objects.get(id=patient_id)
 
-                #update db
-                if patient.owner_id == user.id:
-                    patient.tel = form_patient["tel"].value()
-                    patient.mail = form_patient["mail"].value()
-                    patient.save()
+            #update db
+            if patient.owner_id == user.id:
+                patient.tel = form_patient["tel"].value()
+                patient.mail = form_patient["mail"].value()
+                patient.save()
                 
-                    return redirect(request.META['HTTP_REFERER'])  
+                return redirect(request.META['HTTP_REFERER'])  
 
-        else: 
-            return HttpResponse(':\ something went wrong')
+    else: 
+        return HttpResponse(':\ something went wrong')
         
-        return redirect('detail')
+    return redirect('detail')
 
-    else:
-        return redirect('/')
-
+    
 # REFONTE PROGRESSIVE DE DETAIL. INTÉGRER LES REQUÊTES POST ASSOCIÉES À CETTE CLASSE EN VUE D'ÉVITER LES RÉPÉTITIONS
 
 class Detail(View):
