@@ -124,31 +124,28 @@ def browse(request):
 
     return render(request, 'jengu/browse.html',{'form_patient': form_patient})
 
+@login_required
 def edit_note(request, patient_id):
-    if request.user.is_authenticated:
-        user = request.user
+    user = request.user
 
-        if request.method == 'POST':
-            form_note = EditNote(request.POST)
+    if request.method == 'POST':
+        form_note = EditNote(request.POST)
             
-            if form_note.is_valid():
-                form_note.clean()
+        if form_note.is_valid():
+            form_note.clean()
 
-                patient = Patients.objects.get(id=patient_id)
+            patient = Patients.objects.get(id=patient_id)
 
-                #update db
-                if patient.owner_id == user.id:
-                    patient.notes =form_note["notes"].value()
-                    patient.save()
+            #update db
+            if patient.owner_id == user.id:
+                patient.notes =form_note["notes"].value()
+                patient.save()
 
-                    return redirect(request.META['HTTP_REFERER'])  
-        else: 
-            return HttpResponse(':\ something went wrong')
+                return redirect(request.META['HTTP_REFERER'])  
+    else: 
+        return HttpResponse(':\ something went wrong')
         
-        return redirect('detail')
-
-    else:
-        return redirect('/')
+    return redirect('detail')
 
 @login_required
 def edit_patient(request, patient_id):  
