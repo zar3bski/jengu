@@ -1,0 +1,29 @@
+version: '3.7'
+
+services:
+  web:
+    build: 
+      context: ./jengu
+      dockerfile: Dockerfile
+    command: python /usr/src/jengu/manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./jengu/:/usr/src/jengu/
+    ports:
+      - 8000:8000
+    environment:
+      - SECRET_KEY='o@@xO=jrd=p0^17svmYpw!22-bnm3zz*%y(7=j+p*t%ei-4pi!'
+      - SQL_ENGINE=django.db.backends.postgresql
+      - SQL_DATABASE=postgres
+      - SQL_USER=postgres
+      - SQL_PASSWORD=N0tTh3D3favlTpAssw0rd
+      - SQL_HOST=db
+      - SQL_PORT=5432
+    depends_on:
+      - db
+  db:
+    image: postgres:10.5-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/ 
+
+volumes:
+  postgres_data:

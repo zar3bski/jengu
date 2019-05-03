@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Jengu-save{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+{% include "jengu/header.html" %}
+
+	<div class="row">
+
+	<h3>Sauvegarder</h3>
+
+		<div class="six columns">
+			<h4 align="center"><a href="{{ request.path}}?=patients">mes patients</a></h4>
+		</div>
+
+		<div class="six columns">
+			<h4 align="center"><a href="{{ request.path}}?=consultations">mes consultations</a></h4>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="twelve columns" style="border: none">
+
+			<table class="u-full-width" id="tab_save">
+				{% for c in table %}
+					<tr bgcolor="{% cycle '#F5F5F5' '#AFAFAF' %}">
+						<td>{{c.id}}</td>
+                		<td>{{c.date}}{{c.inscription}}</td>
+                		<td>{{c.first_name}}</td>
+                		<td>{{c.last_name}}</td>
+                		<td>{{c.payed}}{{c.mail}}</td>
+                		<td>{{c.tel}}</td>
+                		<td>{{c.notes}}</td>
+					</tr>
+				{% endfor %}
+			</table>
+
+			<!--added_for_client_side_encryption-->
+        	<script type="text/javascript">
+            	var table = document.getElementById("tab_save");
+            	for (var i = 0, row; row = table.rows[i]; i++) {
+                	row.cells[2].textContent = decrypt(row.cells[2].textContent);
+                	row.cells[3].textContent = decrypt(row.cells[3].textContent);
+                	if (row.cells[4].textContent.length > 6){
+                		row.cells[4].textContent = decrypt(row.cells[4].textContent);
+                	}
+                	if (row.cells[5].textContent.length > 6){
+                		row.cells[5].textContent = decrypt(row.cells[5].textContent);
+                	}
+                	if (row.cells[6].textContent.length > 6){
+                		row.cells[6].textContent = decrypt(row.cells[6].textContent);
+                	}
+            	}
+        	</script>
+
+        	<button onclick="table2csv()" style="float: right;">Exporter le tableau en CSV</button>
+
+        	<script type="text/javascript">
+        	function table2csv(id) {
+        		var html = document.getElementById("tab_save").outerHTML;
+  				export_table_to_csv(html, "table.csv");
+        	};
+			</script>
+
+			
+
+
+			
+		</div>
+	</div>
+
+{% else %}
+  <p>You are not logged in</p>
+  <a href="{% url 'login' %}">login</a>
+{% endif %}
+{% endblock %}
