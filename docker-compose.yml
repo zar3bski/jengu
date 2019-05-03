@@ -3,7 +3,7 @@ version: '3.7'
 services:
   web:
     build: 
-      context: ./jengu
+      context: ./jengu_src
       dockerfile: Dockerfile
     command: python /usr/src/jengu/manage.py runserver 0.0.0.0:8000
     volumes:
