@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     command: python /usr/src/jengu/manage.py runserver 0.0.0.0:8000
     volumes:
-      - ./jengu/:/usr/src/jengu/
+      - ./jengu_src/:/usr/src/jengu/
     ports:
       - 8000:8000
     environment:
