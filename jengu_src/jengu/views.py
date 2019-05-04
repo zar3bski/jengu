@@ -1,30 +1,22 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
+from django.urls import reverse_lazy
+from django.views import generic, View
+from django.contrib.auth.decorators import login_required
+from django.template import loader
+from django.db import connection
 
+from datetime import datetime
 from re import split as re_split
 
 from django.contrib.auth.models import User
 
 from .forms import AddPatientForm, RecordForm, SignUpForm, GetByPatients, EditPatient, EditNote, CalendarPickerForm, AdjustPayed
-
 from .models import Patients, Consultations, Revenues, Unpayed
-
-from django.urls import reverse_lazy
-
-from django.views import generic, View
-
-from django.contrib.auth.decorators import login_required
-
-from django.template import loader
-
-from django.db import connection
-
-from datetime import datetime
 
 # global variables
 current_year = datetime.now().year
-
 
 # pas sur que cela serve encore
 class SignUp(generic.CreateView):
@@ -39,7 +31,6 @@ def index(request):
     form_add = AddPatientForm()
 
     return render(request, 'jengu/index.html', {'form_add': form_add, 'form_record': form_record})
-
 
 @login_required
 def add_patient(request):
@@ -108,7 +99,6 @@ def record_session(request):
     else:
         return HttpResponse(':\ something went wrong')
             
-
 @login_required
 def browse(request): 
     user = request.user
@@ -170,8 +160,7 @@ def edit_patient(request, patient_id):
         return HttpResponse(':\ something went wrong')
         
     return redirect('detail')
-
-    
+  
 # REFONTE PROGRESSIVE DE DETAIL. INTÉGRER LES REQUÊTES POST ASSOCIÉES À CETTE CLASSE EN VUE D'ÉVITER LES RÉPÉTITIONS
 
 class Detail(View):
@@ -233,7 +222,7 @@ class Compta(View):
             month_nb = months["month"].value()
             return redirect(month_nb+'/')
         
-        #ICI : compta détaillé par mois: édition des éventuels impayés
+#ICI : compta détaillé par mois: édition des éventuels impayés
 class ComptaDetail(Compta):
     template = loader.get_template("jengu/comptadetail.html")
     initial = {'payed':0}
