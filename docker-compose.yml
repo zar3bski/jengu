@@ -11,6 +11,7 @@ services:
     ports:
       - 8000:8000
     environment:
+      - DEBUG=1
       - SECRET_KEY='o@@xO=jrd=p0^17svmYpw!22-bnm3zz*%y(7=j+p*t%ei-4pi!'
       - SQL_ENGINE=django.db.backends.postgresql
       - SQL_DATABASE=postgres
@@ -23,7 +24,11 @@ services:
   db:
     image: postgres:10.5-alpine
     volumes:
-      - postgres_data:/var/lib/postgresql/data/ 
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=N0tTh3D3favlTpAssw0rd
+      - POSTGRES_DB=postgres
 
 volumes:
   postgres_data:

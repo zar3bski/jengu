@@ -23,6 +23,7 @@ RUN pipenv install --skip-lock --system
 
 # copy entrypoint-prod.sh
 COPY ./entrypoint.prod.sh /usr/src/jengu/entrypoint.prod.sh
+COPY ./entrypoint.prod.sh /usr/src/jengu/migrate.sh
 
 # copy project
 COPY . /usr/src/jengu/
