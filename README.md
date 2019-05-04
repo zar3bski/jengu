@@ -34,3 +34,15 @@ POSTGRES_USER=some_user_name
 POSTGRES_PASSWORD=some_looooooooong_password
 POSTGRES_DB=some_db_name
 ```
+
+### run in production
+
+```
+sudo docker-compose -f docker-compose.prod.yml up -d --build
+```
+
+for migrations (i.e. django migrations and custom sql functions and triggers)
+
+```
+sudo docker-compose -f docker-compose.prod.yml exec web sh migrate.sh
+```
