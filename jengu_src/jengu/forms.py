@@ -3,8 +3,6 @@ from .models import Patients
 
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-#from datetimepicker.widgets import DateTimePicker
-
 
 class AdjustPayed(forms.Form):
     payed = forms.DecimalField(label='', required=False)
@@ -29,8 +27,6 @@ class EditPatient(forms.Form):
     mail = forms.CharField(label='mail', max_length=80, required=False)
 
 class EditNote(forms.Form):
-    #notes = forms.CharField(label='notes', required=False)
-    #notes =  forms.Textarea()
     notes = forms.CharField(label='notes',widget=forms.Textarea(attrs={'rows':12, 'cols':40}))
 
 
@@ -57,11 +53,10 @@ class GetByPatients(forms.Form):
         self.fields['Patient'] = forms.ModelChoiceField(queryset=Patients.objects.filter(owner_id=user)) 
 
 
-# pas sur que celui ci serve encore
 class SignUpForm(UserCreationForm):
     username = forms.CharField(max_length=30, required=False)
     email = forms.EmailField(max_length=254, required=True)
-
+    
     class Meta:
         model = User
         fields = ('email', 'username')
