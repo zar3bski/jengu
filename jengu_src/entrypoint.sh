@@ -17,4 +17,6 @@ python manage.py migrate
 # add custom sql functions to db 
 cat jengu/sql/jengu_base.sql | python manage.py dbshell
 
+python manage.py collectstatic --no-input --clear
+
 exec "$@"
