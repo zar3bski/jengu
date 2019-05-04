@@ -55,22 +55,16 @@ To run and / or apply change to running containers
 sudo docker-compose -f docker-compose.prod.yml up -d --build
 ```
 
+To create a *superuser* (i.e. administrator)
+
+```
+sudo docker-compose -f docker-compose.prod.yml exec web python manage.py createsuperuser --username=joe --email=joe@example.com
+```
+
 for db migrations (i.e. django migrations and custom sql functions and triggers)
 
 ```
 sudo docker-compose -f docker-compose.prod.yml exec web sh migrate.sh
 ```
 
-**NB** please note that, at this stage of development, registration requiers manual activations of users from the DBA (email validation to be included in later releases) 
-
-You can log into the db container 
-
-```
-sudo docker-compose -f docker-compose.prod.yml exec db psql --username=some_user_name --dbname=some_db_name
-```
-
-and pass the user as active
-
-```
- UPDATE auth_user SET is_active='t' WHERE id=1
-```
+**NB** please note that, at this stage of development, registration requiers **manual activations** of users from the administrator (email validation to be included in later releases). Log as superuser, go to the **admin section** and pass the user as `active`
