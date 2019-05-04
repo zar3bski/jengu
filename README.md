@@ -72,5 +72,5 @@ sudo docker-compose -f docker-compose.prod.yml exec db psql --username=some_user
 and pass the user as active
 
 ```
- UPDATE auth_user SET is_active='f' WHERE id=1
+ UPDATE auth_user SET is_active='t' WHERE id=1
 ```
