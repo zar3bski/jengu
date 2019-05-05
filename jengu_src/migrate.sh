@@ -13,3 +13,4 @@ fi
 
 python manage.py migrate --noinput
 cat jengu/sql/jengu_base.sql | python manage.py dbshell
+python manage.py collectstatic --no-input --clear
