@@ -32,6 +32,7 @@ You will need two files at the root of the project:
 ```
 DEBUG=0
 SECRET_KEY=some_secret_key_of_your_choice
+STATIC_FILES_HOST=/usr/local/share/jengu/staticfiles  # leave it this way or change the proxy conf accordingly
 SQL_ENGINE=django.db.backends.postgresql
 SQL_DATABASE=some_db_name
 SQL_USER=some_user_name
@@ -67,4 +68,8 @@ for db migrations (i.e. django migrations and custom sql functions and triggers)
 sudo docker-compose -f docker-compose.prod.yml exec web sh migrate.sh
 ```
 
-**NB** please note that, at this stage of development, registration requiers **manual activations** of users from the administrator (email validation to be included in later releases). Log as superuser, go to the **admin section** and pass the user as `active`
+### Set an Apache Proxy Pass up
+
+```
+a2enmod proxy proxy_http rewrite
+```
