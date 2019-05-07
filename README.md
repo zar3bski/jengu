@@ -62,7 +62,7 @@ To create a *superuser* (i.e. administrator)
 sudo docker-compose -f docker-compose.prod.yml exec web python manage.py createsuperuser --username=joe --email=joe@example.com
 ```
 
-for db migrations (i.e. django migrations and custom sql functions and triggers)
+for db migrations (i.e. django migrations and custom sql functions and triggers) and localfiles gathering, just run the script 
 
 ```
 sudo docker-compose -f docker-compose.prod.yml exec web sh migrate.sh
@@ -70,6 +70,28 @@ sudo docker-compose -f docker-compose.prod.yml exec web sh migrate.sh
 
 ### Set an Apache Proxy Pass up
 
+Enable the following modules
 ```
 a2enmod proxy proxy_http rewrite
 ```
+
+use the following conf: 
+
+```
+<VirtualHost *:80>
+	ServerName jengu.likeitmake.it	
+	
+	Alias /staticfiles /usr/local/share/jengu/staticfiles
+	ProxyPass /staticfiles !	
+	ProxyPass / http://localhost:8000/
+		
+	<Directory /usr/local/share/jengu/staticfiles>
+                Options Indexes FollowSymLinks
+                Order allow,deny
+                Allow from all
+                Require all granted
+        </Directory>		
+</VirtualHost>
+
+```
+Live long and prosper \\//_
