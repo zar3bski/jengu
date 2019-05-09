@@ -72,7 +72,7 @@ sudo docker-compose -f docker-compose.prod.yml exec web sh migrate.sh
 
 Enable the following modules
 ```
-a2enmod proxy proxy_http rewrite
+a2enmod proxy proxy_http
 ```
 
 use the following conf: 
@@ -90,8 +90,41 @@ use the following conf:
                 Order allow,deny
                 Allow from all
                 Require all granted
-        </Directory>		
+    </Directory>
+
+    SetEnvIf Request_URI "^/staticfiles/.*" dontlog
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined env=!dontlog
+		
 </VirtualHost>
+```
+
+### Add a Fail2ban to prevent bruteforce attacks
+
+If your server uses [Fail2ban](https://www.fail2ban.org/wiki/index.php/Main_Page), provided that Apache is writing its access logs in `/var/log/apache*/*access.log` , you can easily prevent bruteforce attacks on login urls with the two following steps. 
+
+**create a filter in `/etc/fail2ban/filter.d/auth-jengu.conf`**
 
 ```
+[INCLUDES]
+before = common.conf
+[Definition]
+failregex =<HOST> - -.*POST (/admin/login/|/jengu/login).*
+```
+
+**create a jail in `/etc/fail2ban/jail.d/some-configuration.conf`** Add the following rule before you restart fail2ban
+
+```
+[jengu-auth]
+enabled  = true
+findtime = 600
+bantime  = 86400
+port     = http,https
+filter   = auth-jengu
+logpath  = /var/log/apache*/*access.log
+maxretry = 5
+```
+
+
 Live long and prosper \\//_
